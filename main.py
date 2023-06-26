@@ -35,6 +35,7 @@ class ChatWindow(QMainWindow):
         super().__init__()
         self.setGeometry(200, 200, 500, 400)
         self.setWindowTitle("Chat Window")
+        self.chat_history_folder = "chat_history"
 
         self.label = QLabel(self)
         self.label.move(50, 50)
@@ -80,7 +81,7 @@ class ChatWindow(QMainWindow):
             self.save_chat_history()
 
     def save_chat_history(self):
-        filename = f"{self.user_name}_chat_history.json"
+        filename = f"{self.chat_history_folder}/{self.user_name}_chat_history.json"
         with open(filename, 'w') as file:
             json.dump(self.chat_history, file, indent=4)
 
