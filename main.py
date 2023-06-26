@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton, QLineEdit, QTextEdit, QDialog, QVBoxLayout
+from PyQt5.QtCore import Qt
 import sys
 from datetime import datetime
 import json
@@ -15,6 +16,7 @@ class NameDialog(QDialog):
         layout.addWidget(self.label)
 
         self.name_field = QLineEdit()
+        self.name_field.returnPressed.connect(self.on_submit)  # Connect Enter key press to on_submit method
         layout.addWidget(self.name_field)
 
         self.submit_button = QPushButton("Submit")
@@ -40,6 +42,7 @@ class ChatWindow(QMainWindow):
         self.text_field = QLineEdit(self)
         self.text_field.move(50, 300)
         self.text_field.resize(300, 30)
+        self.text_field.returnPressed.connect(self.on_button_clicked)  # Connect Enter key press to on_button_clicked method
 
         self.text_area = QTextEdit(self)
         self.text_area.move(50, 100)
@@ -75,7 +78,6 @@ class ChatWindow(QMainWindow):
             self.text_area.append(f"{current_time} - {self.user_name}: {text}")
             self.text_field.clear()
             self.save_chat_history()
-
 
     def save_chat_history(self):
         filename = f"{self.user_name}_chat_history.json"
