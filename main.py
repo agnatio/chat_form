@@ -89,8 +89,9 @@ class ChatWindow(QMainWindow):
 
     def save_chat_history(self):
         filename = f"{self.chat_history_folder}/{self.user_name}_chat_history.json"
+        user_chat_history = [message for message in self.chat_history if message['user'] == self.user_name]
         with open(filename, 'w') as file:
-            json.dump(self.chat_history, file, indent=4)
+            json.dump(user_chat_history, file, indent=4)
 
     def closeEvent(self, event):
         self.save_chat_history()

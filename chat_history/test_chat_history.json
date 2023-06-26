@@ -1,0 +1,17 @@
+[
+    {
+        "timestamp": "22:49:49",
+        "user": "test",
+        "message": "Test"
+    },
+    {
+        "timestamp": "22:49:51",
+        "user": "test",
+        "message": "test"
+    },
+    {
+        "timestamp": "22:49:56",
+        "user": "test",
+        "message": "so what?"
+    }
+]
