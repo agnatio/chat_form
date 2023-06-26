@@ -10,6 +10,7 @@ class NameDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Name Entry")
+        self.setFixedSize(150, 100)
 
         layout = QVBoxLayout()
 
@@ -26,6 +27,8 @@ class NameDialog(QDialog):
 
         self.setLayout(layout)
 
+       
+
     def on_submit(self):
         name = self.name_field.text()
         if name:
@@ -36,6 +39,8 @@ class ChatWindow(QMainWindow):
         super().__init__()
         self.setGeometry(200, 200, 500, 400)
         self.setWindowTitle("Chat Window")
+        # block resizing of the window
+        self.setFixedSize(self.size())
         self.chat_history_folder = "chat_history"
 
         self.label = QLabel(self)
@@ -72,6 +77,9 @@ class ChatWindow(QMainWindow):
         if dialog.exec_() == QDialog.Accepted:
             self.user_name = dialog.name_field.text()
             self.label.setText(self.user_name)
+        else:
+            sys.exit()
+
 
     def on_button_clicked(self):
         text = self.text_field.text()
