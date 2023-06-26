@@ -76,7 +76,7 @@ class ChatWindow(QMainWindow):
     def on_button_clicked(self):
         text = self.text_field.text()
         if text:
-            current_time = datetime.now().strftime("%H:%M:%S")
+            current_time = datetime.now().strftime("%d.%m.%y|%H:%M:%S")
             message = {
                 'timestamp': current_time,
                 'user': self.user_name,
