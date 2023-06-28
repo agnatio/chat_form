@@ -3,8 +3,24 @@ import json
 from datetime import datetime
 from PyQt5.QtCore import QCoreApplication, QMetaObject, QRect, QSize, QUrl, Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMenuBar, \
-    QPushButton, QStatusBar, QTextEdit, QVBoxLayout, QWidget, QAction, QDialog, QGridLayout, QMessageBox, QMenu
+from PyQt5.QtWidgets import (
+                            QApplication, 
+                            QFileDialog, 
+                            QHBoxLayout, 
+                            QLabel, 
+                            QLineEdit, 
+                            QMainWindow, 
+                            QMenuBar, 
+                            QPushButton, 
+                            QStatusBar, 
+                            QTextEdit, 
+                            QVBoxLayout, 
+                            QWidget, 
+                            QAction, 
+                            QDialog, 
+                            QGridLayout, 
+                            QMenu
+                            )
 
 class Authorisation(QDialog):
     def __init__(self):
