@@ -29,7 +29,7 @@ class Authorisation(QDialog):
         self.icon = QIcon(os.path.join(self.current_dir, "fox.ico"))
 
         self.setWindowTitle("Name Entry")
-        self.setFixedSize(150, 100)
+        self.setFixedSize(250, 150)
         self.setWindowIcon(self.icon)
 
         layout = QVBoxLayout()
@@ -67,6 +67,9 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle("MESSENGER")
         self.actionDownload_messages = QAction(MainWindow)
         self.actionDownload_messages.setObjectName("actionDownload_messages")
+        self.actionSettings = QAction(MainWindow)
+        self.actionSettings.setObjectName(u"actionSettings")
+        self.actionSettings.setCheckable(True)
         self.actionDownload_messages.triggered.connect(self.upload_chat_history)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -107,13 +110,17 @@ class Ui_MainWindow(object):
         self.menubar.setGeometry(QRect(0, 0, 675, 26))
         self.menuChat = QMenu(self.menubar)
         self.menuChat.setObjectName("menuChat")
+        self.menuSetup = QMenu(self.menubar)
+        self.menuSetup.setObjectName(u"menuSetup")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.menubar.addAction(self.menuChat.menuAction())
+        self.menubar.addAction(self.menuSetup.menuAction())
         self.menuChat.addAction(self.actionDownload_messages)
+        self.menuSetup.addAction(self.actionSettings)
 
         self.retranslateUi(MainWindow)
 
@@ -139,9 +146,13 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", "MainWindow", None))
         self.actionDownload_messages.setText(QCoreApplication.translate("MainWindow", "Download messages", None))
+        self.actionSettings.setText(QCoreApplication.translate("MainWindow", u"TimeStamp", None))
         self.label.setText(QCoreApplication.translate("MainWindow", "TextLabel", None))
         self.Send.setText(QCoreApplication.translate("MainWindow", "Send", None))
-        self.menuChat.setTitle(QCoreApplication.translate("MainWindow", "Chat", None))
+        self.menuChat.setTitle(QCoreApplication.translate("MainWindow", "Actions", None))
+        self.menuSetup.setTitle(QCoreApplication.translate("MainWindow", u"Setup", None))
+        # set actionSettings checked by default
+        self.actionSettings.setChecked(True)
 
     def on_button_clicked(self):
         print('PyQt5 button click')
@@ -154,6 +165,7 @@ class Ui_MainWindow(object):
                 'message': text
             }
             print(message)
+            print(f"Time is checked {self.actionSettings.isChecked() = }")
             self.chat_history.append(message)
             self.lineEdit.clear()
             self.save_chat_history()
