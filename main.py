@@ -22,7 +22,7 @@ from PyQt5.QtWidgets import (
                             QMenu
                             )
 
-class Authorisation(QDialog):
+class AuthorizationDialog(QDialog):
     def __init__(self):
         super().__init__()
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -52,7 +52,7 @@ class Authorisation(QDialog):
         if name:
             self.accept()
 
-class Ui_MainWindow(object):
+class MessingerApp(object):
     def __init__(self):
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.chat_history_folder = os.path.join(self.current_dir, "chat_history")
@@ -136,7 +136,7 @@ class Ui_MainWindow(object):
         event.accept()
 
     def show_name_dialog(self):
-        dialog = Authorisation()
+        dialog = AuthorizationDialog()
         if dialog.exec_() == QDialog.Accepted:
             self.user_name = dialog.name_field.text()
             self.label.setText(self.user_name)
@@ -172,6 +172,7 @@ class Ui_MainWindow(object):
             self.update_chat_history()
 
     def save_chat_history(self):
+        # ensures that only history of the current user is saved
         filename = os.path.join(self.chat_history_folder, f"{self.user_name}_chat_history.json")
         user_chat_history = [message for message in self.chat_history if message['user'] == self.user_name]
         with open(filename, 'w') as file:
@@ -202,7 +203,7 @@ if __name__ == "__main__":
     import sys
     app = QApplication(sys.argv)
     MainWindow = QMainWindow()
-    ui = Ui_MainWindow()
+    ui = MessingerApp()
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
