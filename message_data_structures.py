@@ -10,10 +10,7 @@ from enum import Enum
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 REP = os.path.join(DIR, "chat_data")
-
-# Define an enum class with 'TIMESTAMP' taking True or False values
-class Options(Enum):
-    TIMESTAMP = False
+TIMESTAMP = True
 
 @dataclass
 class Message:
@@ -23,7 +20,7 @@ class Message:
     timestamp: datetime = datetime.now()
 
     def __repr__(self) -> str:
-        if Options.TIMESTAMP:
+        if TIMESTAMP:
             formatted_timestamp = self.timestamp.strftime("%d-%m-%Y %H:%M:%S")
             return f"{formatted_timestamp} - {self.username}: {self.text}"
         else:
@@ -93,6 +90,7 @@ class Chat:
         return users
 
     def update_sorted_list(self, downloaded_message):
+        print(type(downloaded_message))
         self.sorted_list.add(downloaded_message)
 
     def download_chat_history(self):
@@ -110,7 +108,8 @@ class Chat:
         for user in self.users:
             print(user)
             for message in user.user_messages:
-                print(repr(message))
+                # print(repr(message))
+                print(message)
             print()
 
     def get_next_message(self):
