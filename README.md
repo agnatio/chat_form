@@ -1,56 +1,47 @@
-# PyQt5 Chat Window
 
-This is a simple chat window application implemented using PyQt5 library in Python. It allows users to enter their name, send messages, and view the chat history. The chat history is saved to a JSON file with timestamps for each message.
+# Messenger App
+
+This is a simple messenger application built using PyQt5. It allows users to send and receive messages in real-time. The application supports downloading chat history and displaying messages with timestamps.
+
+## Features
+
+* User authentication: Users can enter their name to start using the messenger app.
+* Real-time messaging: Users can send and receive messages in real-time.
+* Download chat history: Users can download chat history from a specified folder.
+* Timestamps: Messages can be displayed with timestamps.
 
 ## Prerequisites
 
 * Python 3.x
-* PyQt5 library
+* PyQt5
 
-## Installation
+## Getting Started
 
-1. Clone the repository or download the source code.
-2. Install the required dependencies by running the following command:
-   <pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs">pip install PyQt5
+1. Clone the repository:
+   <pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>bash</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-bash">git clone <repository-url>
+   </code></div></div></pre>
+2. Install the required dependencies:
+   <pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs">pip install pyqt5
+   </code></div></div></pre>
+3. Run the application:
+   <pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>css</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-css">python main.py
    </code></div></div></pre>
 
 ## Usage
 
-Run the `chat_window.py` script to launch the chat window application.
-
-<pre><div class="bg-black rounded-md mb-4"><div class="flex items-center relative text-gray-200 bg-gray-800 px-4 py-2 text-xs font-sans justify-between rounded-t-md"><span>shell</span><button class="flex ml-auto gap-2"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>Copy code</button></div><div class="p-4 overflow-y-auto"><code class="!whitespace-pre hljs language-shell">python chat_window.py
-</code></div></div></pre>
-
-When the application starts, it will prompt you to enter your name in a dialog box. After entering the name, the chat window will appear.
-
-* Enter your message in the text field at the bottom.
-* Click the "Send" button to send the message.
-* The sent messages will be displayed in the chat area above, along with timestamps.
-* The chat history will be saved to a JSON file named `<<username>>_chat_history.json`.
+1. Launch the application.
+2. Enter your name in the authentication dialog and click "Submit".
+3. The main window of the messenger app will appear.
+4. Type your message in the input field and press Enter or click the "Send" button to send the message.
+5. Received messages will be displayed in the chat window.
+6. To download chat history, click on the "Actions" menu and select "Download messages". Choose the folder containing the chat history files.
+7. The chat history will be displayed in the chat window with timestamps (if enabled).
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://chat.openai.com/LICENSE) file for details.
+This project is licensed under the [MIT License](https://chat.openai.com/LICENSE).
 
-Feel free to customize and extend the code as per your requirements.
+## Acknowledgements
 
-## Acknowledgments
-
-This project was built using the PyQt5 library, which provides a Python interface for the Qt framework. Special thanks to the developers and contributors of PyQt5.
-
-## Resources
-
-* PyQt5 Documentation: [https://www.riverbankcomputing.com/static/Docs/PyQt5/](https://www.riverbankcomputing.com/static/Docs/PyQt5/)
-* Qt Documentation: [https://doc.qt.io/qt-5/](https://doc.qt.io/qt-5/)
-
-## Contributing
-
-Contributions are welcome! If you find any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
-
-## Authors
-
-* Alexey [a](mailto:your.email@example.com)gnatio11@gmail.com
-
-## Contact
-
-For any inquiries or questions, please contact [a](mailto:your.email@example.com)gnatio11@gmail.com
+* [PyQt5](https://pypi.org/project/PyQt5/): Python bindings for the Qt application framework.
+* [OpenAI](https://openai.com/): The underlying technology powering the chatbot assistant.

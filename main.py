@@ -155,7 +155,7 @@ class MessingerApp(object):
             while True:
                 next_message = chat.get_next_message()
                 if next_message is not None:
-                    print(next_message.__repr__(self.actionSettings.isChecked()))
+                    # print(next_message.__repr__(self.actionSettings.isChecked()))
                     self.textEdit.append(next_message.__repr__(self.actionSettings.isChecked()))
                 else:
                     break

@@ -110,12 +110,13 @@ class Chat:
         return chat_history
 
     def display_chat_history(self):
-        for user in self.users:
-            print(user)
-            for message in user.user_messages:
-                # print(repr(message))
-                print(message)
-            print()
+        ...
+        # for user in self.users:
+        #     print(user)
+        #     for message in user.user_messages:
+        #         # print(repr(message))
+        #         print(message)
+        #     print()
 
     def get_next_message(self):
         if self.last_accessed_index < len(self.sorted_list):
