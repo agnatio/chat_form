@@ -5,6 +5,7 @@ from PyQt5.QtCore import QCoreApplication, QMetaObject, QRect, QSize, QUrl, Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMenuBar, QPushButton, QStatusBar, QTextEdit, QVBoxLayout, QWidget, QAction, QDialog, QGridLayout, QMenu
 from message_data_structures import Message, User, Chat
+from typing import List
 
 class AuthorizationDialog(QDialog):
     def __init__(self):
@@ -35,9 +36,9 @@ class MessingerApp(object):
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.chat_history_folder = os.path.join(self.current_dir, "chat_history")
         self.icon = QIcon(os.path.join(self.current_dir, "fox.ico"))
-        self.folder_path = None
+        self.folder_path: str = None
 
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow: QMainWindow) -> None:
         if MainWindow.objectName():
             MainWindow.setObjectName("MainWindow")
         MainWindow.resize(675, 570)
@@ -102,17 +103,17 @@ class MessingerApp(object):
 
         self.retranslateUi(MainWindow)
         QMetaObject.connectSlotsByName(MainWindow)
-        self.user_name = ""
+        self.user_name: str = ""
         self.user2: User
-        self.chat_history = []
-        self.temp_history = []
+        self.chat_history: List[Message] = []
+        self.temp_history: List[Message] = []
         self.show_name_dialog()
 
-    def on_main_window_show(self, event):
+    def on_main_window_show(self, event) -> None:
         self.lineEdit.setFocus(Qt.OtherFocusReason)
         event.accept()
 
-    def show_name_dialog(self):
+    def show_name_dialog(self) -> None:
         dialog = AuthorizationDialog()
         if dialog.exec_() == QDialog.Accepted:
             self.user_name = dialog.name_field.text()
@@ -121,7 +122,7 @@ class MessingerApp(object):
         else:
             sys.exit()
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, MainWindow) -> None:
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", "MainWindow", None))
         self.actionDownload_messages.setText(QCoreApplication.translate("MainWindow", "Download messages", None))
         self.actionSettings.setText(QCoreApplication.translate("MainWindow", u"TimeStamp", None))
@@ -131,7 +132,7 @@ class MessingerApp(object):
         self.menuSetup.setTitle(QCoreApplication.translate("MainWindow", u"Setup", None))
         self.actionSettings.setChecked(True)
 
-    def on_button_clicked(self):
+    def on_button_clicked(self) -> None:
         print('PyQt5 button click')
         text = self.lineEdit.text()
         if text:
@@ -142,12 +143,12 @@ class MessingerApp(object):
             self.lineEdit.setFocus(Qt.OtherFocusReason)
             self.temp_history.append(message2)
 
-    def upload_chat_history(self):
+    def upload_chat_history(self) -> None:
         self.folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
         if self.folder_path:
             self.upload_chat_history_folder(self.folder_path)
 
-    def upload_chat_history_folder(self, folder_path):
+    def upload_chat_history_folder(self, folder_path: str) -> None:
         self.chat_history = []
         self.textEdit.clear()
         if folder_path:
