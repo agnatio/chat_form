@@ -22,6 +22,8 @@ from PyQt5.QtWidgets import (
                             QMenu
                             )
 
+from message_data_structures import Message, User, Chat
+
 class AuthorizationDialog(QDialog):
     def __init__(self):
         super().__init__()
@@ -57,6 +59,7 @@ class MessingerApp(object):
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.chat_history_folder = os.path.join(self.current_dir, "chat_history")
         self.icon = QIcon(os.path.join(self.current_dir, "fox.ico"))
+        self.folder_path = None
 
     def setupUi(self, MainWindow):
         if MainWindow.objectName():
@@ -65,16 +68,22 @@ class MessingerApp(object):
         MainWindow.showEvent = self.on_main_window_show
         MainWindow.setWindowIcon(self.icon)
         MainWindow.setWindowTitle("MESSENGER")
+
         self.actionDownload_messages = QAction(MainWindow)
         self.actionDownload_messages.setObjectName("actionDownload_messages")
+        self.actionDownload_messages.triggered.connect(self.upload_chat_history)
+        
         self.actionSettings = QAction(MainWindow)
         self.actionSettings.setObjectName(u"actionSettings")
         self.actionSettings.setCheckable(True)
-        self.actionDownload_messages.triggered.connect(self.upload_chat_history)
+        self.actionSettings.triggered.connect(lambda: self.upload_chat_history_folder(self.folder_path))
+        
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
+        
         self.textEdit = QTextEdit(self.centralwidget)
         self.textEdit.setObjectName("textEdit")
         self.textEdit.setReadOnly(True)
@@ -127,11 +136,15 @@ class MessingerApp(object):
         QMetaObject.connectSlotsByName(MainWindow)
 
         self.user_name = ""
+        ###
+        self.user2: User
+        ###
         self.chat_history = []
 
         self.show_name_dialog()
 
     def on_main_window_show(self, event):
+        # describe: when the main window is shown, the focus is set to the line edit
         self.lineEdit.setFocus(Qt.OtherFocusReason)
         event.accept()
 
@@ -139,6 +152,9 @@ class MessingerApp(object):
         dialog = AuthorizationDialog()
         if dialog.exec_() == QDialog.Accepted:
             self.user_name = dialog.name_field.text()
+            ###
+            self.user2 = User(self.user_name)
+            ###
             self.label.setText(self.user_name)
         else:
             sys.exit()
@@ -166,10 +182,17 @@ class MessingerApp(object):
             }
             print(message)
             print(f"Time is checked {self.actionSettings.isChecked() = }")
+            ###
+            message2 = self.user2.add_message(text)
+            ###
             self.chat_history.append(message)
             self.lineEdit.clear()
-            self.save_chat_history()
-            self.update_chat_history()
+            self.textEdit.append(message2.__repr__(self.actionSettings.isChecked()))
+            self.lineEdit.setFocus(Qt.OtherFocusReason)
+
+
+            # self.save_chat_history()
+            # self.update_chat_history(message2)
 
     def save_chat_history(self):
         # ensures that only history of the current user is saved
@@ -187,17 +210,39 @@ class MessingerApp(object):
             text = message['message']
             self.textEdit.append(f"{timestamp} - {user}: {text}")
 
+
     def upload_chat_history(self):
-        folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
-        if folder_path:
+        self.folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
+        
+        if self.folder_path:
             self.chat_history = []
-            for file_name in os.listdir(folder_path):
+            for file_name in os.listdir(self.folder_path):
                 if file_name.endswith(".json"):
-                    file_path = os.path.join(folder_path, file_name)
+                    file_path = os.path.join(self.folder_path, file_name)
                     with open(file_path, 'r') as file:
                         chat_data = json.load(file)
                         self.chat_history.extend(chat_data)
             self.update_chat_history()
+
+    def upload_chat_history(self):
+        self.folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
+        if self.folder_path:
+            self.upload_chat_history_folder(self.folder_path)
+
+    def upload_chat_history_folder(self, folder_path):
+        self.chat_history = []
+        self.textEdit.clear()
+        if folder_path:
+            chat = Chat(folder_path, timestamp_on=self.actionSettings.isChecked())
+            while True:
+                next_message = chat.get_next_message()
+                if next_message is not None:
+                    print(next_message.__repr__(self.actionSettings.isChecked()))
+                    self.textEdit.append(next_message.__repr__(self.actionSettings.isChecked()))
+                else:
+                    break
+        else:
+            print("No folder selected")
 
 if __name__ == "__main__":
     import sys
