@@ -75,6 +75,7 @@ class User:
 
 class Chat:
     def __init__(self, folder_path: str = REP, timestamp_on: bool = TIMESTAMP):
+        print(f"Initializing chat. Chat folder path: {folder_path}")
         self.timestamp_on = timestamp_on
         self.rep = folder_path
         self.users: List[User] = self.fetch_users()

@@ -1,3 +1,6 @@
+# now the problem is in setupgui in lambda function. Must put there whatever is not zero.
+
+
 import os
 import json
 from datetime import datetime
@@ -6,6 +9,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMenuBar, QPushButton, QStatusBar, QTextEdit, QVBoxLayout, QWidget, QAction, QDialog, QGridLayout, QMenu
 from message_data_structures import Message, User, Chat
 from typing import List
+
 
 class AuthorizationDialog(QDialog):
     def __init__(self):
@@ -37,8 +41,26 @@ class MessingerApp(object):
         self.chat_history_folder = os.path.join(self.current_dir, "chat_history")
         self.icon = QIcon(os.path.join(self.current_dir, "fox.ico"))
         self.folder_path: str = None
+        self.folder_path2: str = None
 
     def setupUi(self, MainWindow: QMainWindow) -> None:
+        print("setupUi...")
+        self.setup_main_window(MainWindow)
+        self.setup_actions(MainWindow)
+        self.setup_central_widget(MainWindow)
+        self.setup_menu_bar(MainWindow)
+        self.setup_status_bar(MainWindow)
+
+        self.retranslateUi(MainWindow)
+        QMetaObject.connectSlotsByName(MainWindow)
+
+        self.user_name: str = ""
+        self.user2: User
+        self.chat_history: List[Message] = []
+        self.temp_history: List[Message] = []
+        self.show_name_dialog()
+
+    def setup_main_window(self, MainWindow: QMainWindow) -> None:
         if MainWindow.objectName():
             MainWindow.setObjectName("MainWindow")
         MainWindow.resize(675, 570)
@@ -46,6 +68,7 @@ class MessingerApp(object):
         MainWindow.setWindowIcon(self.icon)
         MainWindow.setWindowTitle("MESSENGER")
 
+    def setup_actions(self, MainWindow: QMainWindow) -> None:
         self.actionDownload_messages = QAction(MainWindow)
         self.actionDownload_messages.setObjectName("actionDownload_messages")
         self.actionDownload_messages.triggered.connect(self.upload_chat_history)
@@ -55,6 +78,7 @@ class MessingerApp(object):
         self.actionSettings.setCheckable(True)
         self.actionSettings.triggered.connect(lambda: self.upload_chat_history_folder(self.folder_path))
 
+    def setup_central_widget(self, MainWindow: QMainWindow) -> None:
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
 
@@ -84,6 +108,8 @@ class MessingerApp(object):
         self.gridLayout.addLayout(self.horizontalLayout, 1, 0, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
+
+    def setup_menu_bar(self, MainWindow: QMainWindow) -> None:
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
         self.menubar.setGeometry(QRect(0, 0, 675, 26))
@@ -92,22 +118,17 @@ class MessingerApp(object):
         self.menuSetup = QMenu(self.menubar)
         self.menuSetup.setObjectName(u"menuSetup")
         MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
 
         self.menubar.addAction(self.menuChat.menuAction())
         self.menubar.addAction(self.menuSetup.menuAction())
         self.menuChat.addAction(self.actionDownload_messages)
         self.menuSetup.addAction(self.actionSettings)
 
-        self.retranslateUi(MainWindow)
-        QMetaObject.connectSlotsByName(MainWindow)
-        self.user_name: str = ""
-        self.user2: User
-        self.chat_history: List[Message] = []
-        self.temp_history: List[Message] = []
-        self.show_name_dialog()
+    def setup_status_bar(self, MainWindow: QMainWindow) -> None:
+        self.statusbar = QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
 
     def on_main_window_show(self, event) -> None:
         self.lineEdit.setFocus(Qt.OtherFocusReason)
@@ -144,14 +165,36 @@ class MessingerApp(object):
             self.temp_history.append(message2)
 
     def upload_chat_history(self) -> None:
-        self.folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
+        """this is complicated logic because of different potential user behaviour. For example start opening a folder and then sopping the process in the middle"""
         if self.folder_path:
-            self.upload_chat_history_folder(self.folder_path)
+            print(f" 1st level Folder path {self.folder_path}") ####!!!! here must reserve folder path and not let make it empty
+            self.folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
+            if self.folder_path:
+                print(f" 2nd level Folder path {self.folder_path}")
+                self.upload_chat_history_folder(self.folder_path)
+            else:
+                self.folder_path = self.folder_path2
+                print(f" 5nd level Folder path {self.folder_path}")
+                self.upload_chat_history_folder(self.folder_path)
+        else:
+            self.folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
+            self.folder_path2 = self.folder_path
+            print(f" 3rd level Folder path {self.folder_path}")
+            if self.folder_path:
+                print(f" 4nd level Folder path {self.folder_path}")
+                self.upload_chat_history_folder(self.folder_path)
+
 
     def upload_chat_history_folder(self, folder_path: str) -> None:
         self.chat_history = []
         self.textEdit.clear()
-        if folder_path:
+        if not folder_path and not self.folder_path2:
+            print("No folder selected and no folder selected previously")
+            self.textEdit.clear()
+            for message in self.temp_history:
+                self.textEdit.append(message.__repr__(self.actionSettings.isChecked()))
+
+        else:
             chat = Chat(folder_path, timestamp_on=self.actionSettings.isChecked())
             while True:
                 next_message = chat.get_next_message()
@@ -160,11 +203,7 @@ class MessingerApp(object):
                     self.textEdit.append(next_message.__repr__(self.actionSettings.isChecked()))
                 else:
                     break
-        else:
-            print("No folder selected")
-            self.textEdit.clear()
-            for message in self.temp_history:
-                self.textEdit.append(message.__repr__(self.actionSettings.isChecked()))
+            
 
 if __name__ == "__main__":
     import sys
