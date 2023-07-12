@@ -154,7 +154,6 @@ class MessingerApp(object):
         self.actionSettings.setChecked(True)
 
     def on_button_clicked(self) -> None:
-        print('PyQt5 button click')
         text = self.lineEdit.text()
         if text:
             print(f"Time is checked {self.actionSettings.isChecked() = }")
@@ -199,7 +198,6 @@ class MessingerApp(object):
             while True:
                 next_message = chat.get_next_message()
                 if next_message is not None:
-                    # print(next_message.__repr__(self.actionSettings.isChecked()))
                     self.textEdit.append(next_message.__repr__(self.actionSettings.isChecked()))
                 else:
                     break
