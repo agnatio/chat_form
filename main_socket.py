@@ -1,30 +1,14 @@
-# now the problem is in setupgui in lambda function. Must put there whatever is not zero.
-
-
 import os
+import json
+import socket
+import threading
 from datetime import datetime
 from PyQt5.QtCore import QCoreApplication, QMetaObject, QRect, QSize, QUrl, Qt
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import (
-    QApplication,
-    QFileDialog,
-    QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QMainWindow,
-    QMenuBar,
-    QPushButton,
-    QStatusBar,
-    QTextEdit,
-    QVBoxLayout,
-    QWidget,
-    QAction,
-    QDialog,
-    QGridLayout,
-    QMenu,
-)
+from PyQt5.QtWidgets import QApplication, QFileDialog, QHBoxLayout, QLabel, QLineEdit, QMainWindow, QMenuBar, QPushButton, QStatusBar, QTextEdit, QVBoxLayout, QWidget, QAction, QDialog, QGridLayout, QMenu
 from message_data_structures import Message, User, Chat
 from typing import List
+
 
 
 class AuthorizationDialog(QDialog):
@@ -59,6 +43,7 @@ class MessingerApp(object):
         self.icon = QIcon(os.path.join(self.current_dir, "fox.ico"))
         self.folder_path: str = None
         self.folder_path2: str = None
+        self.client_socket = None
 
     def setupUi(self, MainWindow: QMainWindow) -> None:
         print("setupUi...")
@@ -91,11 +76,9 @@ class MessingerApp(object):
         self.actionDownload_messages.triggered.connect(self.upload_chat_history)
 
         self.actionSettings = QAction(MainWindow)
-        self.actionSettings.setObjectName("actionSettings")
+        self.actionSettings.setObjectName(u"actionSettings")
         self.actionSettings.setCheckable(True)
-        self.actionSettings.triggered.connect(
-            lambda: self.upload_chat_history_folder(self.folder_path)
-        )
+        self.actionSettings.triggered.connect(lambda: self.upload_chat_history_folder(self.folder_path))
 
     def setup_central_widget(self, MainWindow: QMainWindow) -> None:
         self.centralwidget = QWidget(MainWindow)
@@ -135,7 +118,7 @@ class MessingerApp(object):
         self.menuChat = QMenu(self.menubar)
         self.menuChat.setObjectName("menuChat")
         self.menuSetup = QMenu(self.menubar)
-        self.menuSetup.setObjectName("menuSetup")
+        self.menuSetup.setObjectName(u"menuSetup")
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.menuChat.menuAction())
@@ -158,26 +141,38 @@ class MessingerApp(object):
             self.user_name = dialog.name_field.text()
             self.user2 = User(self.user_name)
             self.label.setText(self.user_name)
+            self.connect_to_server()  # Connect to the remote server
         else:
             sys.exit()
 
-    def retranslateUi(self, MainWindow) -> None:
-        MainWindow.setWindowTitle(
-            QCoreApplication.translate("MainWindow", "MainWindow", None)
-        )
-        self.actionDownload_messages.setText(
-            QCoreApplication.translate("MainWindow", "Download messages", None)
-        )
-        self.actionSettings.setText(
-            QCoreApplication.translate("MainWindow", "TimeStamp", None)
-        )
-        self.label.setText(QCoreApplication.translate("MainWindow", "TextLabel", None))
-        self.Send.setText(QCoreApplication.translate("MainWindow", "Send", None))
-        self.menuChat.setTitle(
-            QCoreApplication.translate("MainWindow", "Actions", None)
-        )
-        self.menuSetup.setTitle(QCoreApplication.translate("MainWindow", "Setup", None))
-        self.actionSettings.setChecked(True)
+    def connect_to_server(self) -> None:
+        server_address = "your_server_address"  # Replace with your actual server address
+        server_port = 12345  # Replace with the appropriate port number
+
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket.connect((server_address, server_port))
+
+        # Send the user's name to the server
+        self.client_socket.send(self.user_name.encode())
+
+        # Start a separate thread to receive messages from the server
+        receive_thread = threading.Thread(target=self.receive_messages)
+        receive_thread.start()
+
+    def receive_messages(self) -> None:
+        while True:
+            try:
+                message = self.client_socket.recv(1024).decode()
+                self.textEdit.append(message)
+            except Exception as e:
+                print("Error receiving message:", e)
+                break
+
+    def send_message(self, message: str) -> None:
+        try:
+            self.client_socket.send(message.encode())
+        except Exception as e:
+            print("Error sending message:", e)
 
     def on_button_clicked(self) -> None:
         text = self.lineEdit.text()
@@ -188,13 +183,12 @@ class MessingerApp(object):
             self.textEdit.append(message2.__repr__(self.actionSettings.isChecked()))
             self.lineEdit.setFocus(Qt.OtherFocusReason)
             self.temp_history.append(message2)
+            self.send_message(message2)  # Send the message to the server
 
     def upload_chat_history(self) -> None:
         """this is complicated logic because of different potential user behaviour. For example start opening a folder and then sopping the process in the middle"""
         if self.folder_path:
-            print(
-                f" 1st level Folder path {self.folder_path}"
-            )  ####!!!! here must reserve folder path and not let make it empty
+            print(f" 1st level Folder path {self.folder_path}")  ####!!!! here must reserve folder path and not let make it empty
             self.folder_path = QFileDialog.getExistingDirectory(None, "Select Folder")
             if self.folder_path:
                 print(f" 2nd level Folder path {self.folder_path}")
@@ -219,22 +213,18 @@ class MessingerApp(object):
             self.textEdit.clear()
             for message in self.temp_history:
                 self.textEdit.append(message.__repr__(self.actionSettings.isChecked()))
-
         else:
             chat = Chat(folder_path, timestamp_on=self.actionSettings.isChecked())
             while True:
                 next_message = chat.get_next_message()
                 if next_message is not None:
-                    self.textEdit.append(
-                        next_message.__repr__(self.actionSettings.isChecked())
-                    )
+                    self.textEdit.append(next_message.__repr__(self.actionSettings.isChecked()))
                 else:
                     break
 
 
 if __name__ == "__main__":
     import sys
-
     app = QApplication(sys.argv)
     MainWindow = QMainWindow()
     ui = MessingerApp()
